@@ -1,0 +1,36 @@
+version: '3'
+networks:
+  openstack:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+      com.docker.network.enable_ipv4: "true"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.19.0.0/16
+#
+# define services
+services:
+ rally:
+  image: rallyforge/rally:latest
+  volumes:
+    - /Users/pli/work/docker-keystone/tests/data:/data
+  entrypoint:
+    - /data/run-cmd.sh
+  links:
+    - keystone
+  networks:
+      openstack:
+        ipv4_address: 172.19.2.20
+
+ keystone:
+  image: openstack-keystone:latest
+  expose:
+    - "5000"
+    - "35357"
+  networks:
+      openstack:
+        ipv4_address: 172.19.2.10
+
+
